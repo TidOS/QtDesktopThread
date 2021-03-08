@@ -33,7 +33,7 @@ import json
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
-
+from PyQt5.QtWidgets import QFileDialog
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -203,10 +203,10 @@ class Ui_MainWindow(object):
         self.WebBrowserLabel.setMaximumSize(QtCore.QSize(16777215, 40))
         self.WebBrowserLabel.setObjectName("WebBrowserLabel")
         self.gridlayout.addWidget(self.WebBrowserLabel, 5, 0, 1, 1)
-        self.checkBox_2 = QtWidgets.QCheckBox(self.SystemTab)
-        self.checkBox_2.setMaximumSize(QtCore.QSize(16777215, 40))
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.gridlayout.addWidget(self.checkBox_2, 6, 1, 1, 1)
+        self.RunBrowserCheckbox = QtWidgets.QCheckBox(self.SystemTab)
+        self.RunBrowserCheckbox.setMaximumSize(QtCore.QSize(16777215, 40))
+        self.RunBrowserCheckbox.setObjectName("RunBrowserCheckbox")
+        self.gridlayout.addWidget(self.RunBrowserCheckbox, 6, 1, 1, 1)
         self.WebBrowserInput = QtWidgets.QLineEdit(self.SystemTab)
         self.WebBrowserInput.setMaximumSize(QtCore.QSize(16777215, 40))
         self.WebBrowserInput.setObjectName("WebBrowserInput")
@@ -307,7 +307,7 @@ class Ui_MainWindow(object):
         self.webdriverLabel.setText(_translate("MainWindow", "Web driver: "))
         self.WebBrowserFileChoose.setText(_translate("MainWindow", "..."))
         self.WebBrowserLabel.setText(_translate("MainWindow", "Web Browser: "))
-        self.checkBox_2.setText(_translate("MainWindow", "Run browser after post"))
+        self.RunBrowserCheckbox.setText(_translate("MainWindow", "Run browser after post"))
         self.WebBrowserInput.setPlaceholderText(_translate("MainWindow", "/usr/bin/google-chrome"))
         self.ScrotCommandInput.setPlaceholderText(_translate("MainWindow", "scrot -o /home/anon/post.png"))
         self.WebDriverFileChoose.setText(_translate("MainWindow", "..."))
@@ -324,6 +324,7 @@ class Ui_MainWindow(object):
 captchatime = 20
 config = configparser.ConfigParser()
 config.read("desktopthread.cfg")
+messagemode = False
     
 parser = argparse.ArgumentParser(description='Post desktop on /g/')
 #parser.add_argument("-I", "-i", "--init",              help="run through initial setup", action=)
@@ -338,29 +339,32 @@ parser.add_argument("-D", "-d", "--debug",             help="Enable debug messag
 args = parser.parse_args()
 
 def initBrowser():
+    global browser
     if ui.WebDriverInput.text().lower() == "chromedriver":
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
         if not goldUser:
             chrome_options.add_experimental_option( "prefs",{'profile.managed_default_content_settings.javascript': 2})
             browser = webdriver.Chrome('chromedriver',options=chrome_options)
-            return browser
+        #gold user    
         else:
-            if ui.checkbox.isChecked():
+            if headless:
                 chrome_options.add_argument("--headless")
                 browser = webdriver.Chrome('chromedriver',options=chrome_options)
-                return browser
+            else:
+                browser = webdriver.Chrome('chromedriver')
+            goldSignin()
+
     elif ui.WebDriverInput.text().lower() == "firefox":
         from selenium.webdriver.firefox.options import Options
         browser = webdriver.Firefox()
-        return browser
+        
     else:
         print("incorrect webdriver value in desktopthread.cfg, use chromedriver or geckodriver")
         exit(1)
-    
-    if goldUser:
-        goldSignin(browser)
 
+    #at this point we have either signed into a gold account or not
+    #but we have a browser available to us.
 
 def goldSignin():
     browser.get("https://sys.4channel.org/auth")
@@ -381,6 +385,14 @@ def goldSignin():
 
 def greeting():
     print("hello")
+
+def gen_chan():
+    for idx, page in enumerate(r):
+        for thread in r[idx]['threads']:
+            yield thread
+
+def get_threads(key: str, default='NaN'):
+    return threads.get(key,default)
 
 
 def fillUI():
@@ -413,6 +425,11 @@ def fillUI():
     scrot = QPixmap(filename)
     ui.DesktopPreview.setPixmap(scrot)
 
+    #load up threads
+    for i in threadlist:
+        ui.ThreadComboBox.addItem(str(i))
+    ui.ThreadComboBox.setCurrentIndex(0)
+
     #4chan gold account info
     global goldUser
     global token
@@ -434,8 +451,60 @@ def fillUI():
     webdrivername = config['system']['webdriver']
     ui.WebDriverInput.setText(webdrivername)
 
+    global headless
+    headless = False
+    if ui.checkBox.isEnabled():
+        if args.headless or "y" in config['system']['headless'].lower():
+            ui.checkBox.setChecked(True)
+            headless = True
+
+    global scrotter
+    scrotter = config['top']['scrot-cmd']
+    ui.ScrotCommandInput.setText(scrotter)
+
+    global webbrowser
+    webbrowser = config['system']['mybrowserpath']
+    ui.WebBrowserInput.setText(webbrowser)
+    
+    global runbrowser
+    runbrowser = False
+    if "y" in config['system']['openbrowserafterpost'].lower():
+        ui.RunBrowserCheckbox.setChecked(True)
+        runbrowser = True
 
 
+
+def newThreadClicked():
+    global newThread 
+    newThread = False
+    if ui.NewThreadCheckBox.isChecked():
+        ui.ThreadComboBox.setEnabled(False)
+        newThread = True
+    else:
+        ui.ThreadComboBox.setEnabled(True)
+
+def goldClicked():
+    print("gold account checkbox clicked, it is now " + str(ui.GoldAccountCheckbox.isChecked()))
+    if ui.GoldAccountCheckbox.isChecked():
+        ui.checkBox.setEnabled(True)
+    else:
+        ui.checkBox.setEnabled(False)
+'''
+def fileClicked():
+    fname = QFileDialog.getOpenFileName('Select file')
+    if fname:
+        filename = fname
+        ui.lineedit.setText(filename)
+    else:
+        ui.lineedit.setText('No file selected')
+        filename = ""
+'''
+
+def fileClicked():
+    name = QFileDialog.getOpenFileName(ui.toolButton, 'Open File')
+    filename = name[0]
+    ui.lineEdit.setText(filename)
+    ui.DesktopPreview.setPixmap(QPixmap(filename))
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
@@ -443,10 +512,55 @@ if __name__ == "__main__":
     global ui
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    MainWindow.show()
-    ui.PostButton.clicked.connect(initBrowser)
+    MainWindow.show()   
+      
+    
+    #load up all threads on board using json api
+    #currently we look for OP posts containing "desktop thread"
+    #the first such thread we take as our thread - in the future
+    #we could look at all threads that match and choose the best 
+    #one based on current replies (is one about to die or was the
+    # one we found started prematurely?)
+    global r
+    r = requests.get('https://a.4cdn.org/g/catalog.json')
+    r = r.json()
 
+    global found
+    found = False
+    global threadlist
+    threadlist = []
+
+    '''for threads in gen_chan():
+        com = get_threads('com')
+        sub = get_threads('sub')
+        no = get_threads('no')
+        #desktop thread search string
+        if "desktop thread" in com.lower()or "desktop thread" in sub.lower():
+            if messagemode:
+                if not args.new or "y" in config['post']['forcenewthread'].lower():
+                    print("desktop thread found at " + str(no))
+            if args.new or "y" in config['post']['forcenewthread'].lower():
+                if messagemode:
+                    print("found a thread but starting a new one anyway")
+            found = True
+            threadlist.append(no)
+            #print(threadlist)
+    '''
+    
+
+    
     fillUI()
+    initBrowser()
+    ui.NewThreadCheckBox.clicked.connect(newThreadClicked)
+    ui.GoldAccountCheckbox.clicked.connect(goldClicked)
+    ui.toolButton.clicked.connect(fileClicked)
+    #ui.PostButton.clicked.connect(initBrowser)
+
+
+
+    
+    
+    
 
     #browser = initBrowser()
 
