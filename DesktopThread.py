@@ -28,15 +28,13 @@ import json
 # Created by: PyQt5 UI code generator 5.15.3
 #
 
-
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("Desktop Thread")
         MainWindow.resize(763, 825)
         MainWindow.setAutoFillBackground(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -305,7 +303,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "DesktopThread"))
         self.NameFieldLabel.setText(_translate("MainWindow", "Name:"))
         self.NameField.setPlaceholderText(_translate("MainWindow", "Anonymous"))
         self.CommentFieldLabel.setText(_translate("MainWindow", "Comment:"))
