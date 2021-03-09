@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>763</width>
-    <height>796</height>
+    <height>825</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="MainTab">
        <attribute name="title">
@@ -87,7 +87,7 @@
            <string/>
           </property>
           <property name="maxLength">
-           <number>5</number>
+           <number>30</number>
           </property>
           <property name="frame">
            <bool>true</bool>
@@ -452,7 +452,7 @@
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QCheckBox" name="checkBox_2">
+         <widget class="QCheckBox" name="RunBrowserCheckbox">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -584,6 +584,32 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
+        <widget class="QPushButton" name="SaveButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Save Config</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="LoadButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Load Config</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="PostButtonSpacerLabel">
          <property name="text">
           <string/>
@@ -633,6 +659,21 @@
     </item>
    </layout>
   </widget>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
