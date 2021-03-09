@@ -1,4 +1,5 @@
 ﻿# QtDesktopThread
+ ![Screenshot](./screenshot.png)
 QtDesktopThread is an expansion on [DesktopThread](https://github.com/TidOS/DesktopThread).  It is largely the same, but features a Qt frontend.  
 It requires:
 
