@@ -407,7 +407,7 @@ def initBrowser():
 
     browser.find_element_by_name("com").send_keys(comment)
     browser.find_element_by_name("name").send_keys(name)
-    browser.find_element_by_name("upfile").send_keys(filename)
+    browser.find_element_by_name("upfile").send_keys(ui.lineEdit.text())
 
     if not goldUser:
         WebDriverWait(browser, captchatime).until(lambda driver: 
