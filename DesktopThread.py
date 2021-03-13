@@ -378,9 +378,24 @@ def initBrowser():
                 browser = webdriver.Chrome('chromedriver')
             goldSignin()
 
-    elif ui.WebDriverInput.text().lower() == "firefox":
+    elif ui.WebDriverInput.text().lower() == "geckodriver":
         from selenium.webdriver.firefox.options import Options
-        browser = webdriver.Firefox()
+        global profile
+        global fireFoxOptions
+        profile = webdriver.FirefoxProfile()
+        options = Options()
+        if not goldUser:
+            profile.set_preference("javascript.enabled", False)
+            browser = webdriver.Firefox(profile, firefox_options=options)
+        #gold user
+        else:
+            if headless:
+                options.headless = True
+                browser = webdriver.Firefox(profile, firefox_options=options)
+            else:
+                browser = webdriver.Firefox(profile)
+            goldSignin()
+        #browser = webdriver.Firefox()
         
     else:
         print("incorrect webdriver value in desktopthread.cfg, use chromedriver or geckodriver")
