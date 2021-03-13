@@ -5,7 +5,7 @@ It requires:
 
  - python 3
  - selenium
- - chromedriver + chrome
+ - chromedriver + chrome OR geckodriver + firefox
  - pyqt5
 
 It is highly recommended to have a [4chan pass](https://www.4channel.org/pass) so that you can use the headless mode and not have to solve a captcha in an unthemed browser.
@@ -14,7 +14,7 @@ It is highly recommended to have a [4chan pass](https://www.4channel.org/pass) s
 1. First, copy sample.cfg to desktopthread.cfg  
 2. Edit desktopthread.cfg to suit your tastes  
 3. Get [chromedriver](https://chromedriver.chromium.org) and make sure it is in your PATH variable, make sure chrome is insta  
-lled  
+lled, or if you use firefox get [geckodriver](https://github.com/mozilla/geckodriver/releases)
 4. Install the required modules with pip  
 `pip install -r requirements.txt`
 5. Run the script and hope it works.
